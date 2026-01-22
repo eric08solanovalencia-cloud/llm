@@ -1,0 +1,39 @@
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+
+if not OPENAI_API_KEY:
+    raise ValueError("No se encontró la variable de entorno OPENAI_API_KEY")
+from openai import OpenAI
+from config import OPENAI_API_KEY
+
+client = OpenAI(api_key=OPENAI_API_KEY)
+
+def generate_text(prompt):
+    response = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {"role": "system", "content": "Eres un asistente de escritura útil y claro."},
+            {"role": "user", "content": prompt}
+        ],
+        temperature=0.7,
+        max_tokens=300
+    )
+    return response.choices[0].message.content
+
+
+print("📝 Asistente de Escritura Automática")
+print("Tipos: correo | artículo | texto libre")
+
+tipo = input("Tipo de texto: ")
+tema = input("Tema o idea: ")
+
+prompt = f"Escribe un {tipo} sobre el siguiente tema:\n{tema}"
+
+resultado = generate_text(prompt)
+
+print("\n📄 Texto generado:\n")
+print(resultado)
